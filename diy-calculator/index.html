@@ -1,0 +1,796 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Paint a Room – Confidence Planner</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#101a2e;
+      --muted:#9fb0d0;
+      --text:#eef3ff;
+      --border:rgba(255,255,255,.10);
+      --accent:#7aa2ff;
+      --good:#2ecc71;
+      --warn:#f1c40f;
+      --bad:#ff5b5b;
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 500px at 20% -10%, rgba(122,162,255,.35), transparent 60%),
+                  radial-gradient(900px 450px at 90% 10%, rgba(46,204,113,.22), transparent 60%),
+                  radial-gradient(900px 450px at 70% 120%, rgba(241,196,15,.20), transparent 60%),
+                  var(--bg);
+      color:var(--text);
+    }
+    header{max-width:1100px;margin:24px auto 0;padding:0 16px}
+    h1{margin:0;font-size:28px;letter-spacing:.2px}
+    .subtitle{color:var(--muted); margin:6px 0 0; line-height:1.4}
+
+    main{
+      max-width:1100px;margin:18px auto 44px;padding:0 16px;
+      display:grid;grid-template-columns: 1fr 1fr;gap:16px;
+    }
+    @media (max-width: 980px){ main{grid-template-columns: 1fr} }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:16px;
+    }
+    .card h2{margin:0 0 8px;font-size:16px;letter-spacing:.2px}
+    .hint{color:var(--muted); font-size:13px; line-height:1.35; margin:6px 0 0}
+
+    .grid{display:grid;grid-template-columns: 1fr 1fr;gap:10px;margin-top:10px}
+    .grid3{display:grid;grid-template-columns: 1fr 1fr 1fr;gap:10px;margin-top:10px}
+    @media (max-width: 540px){ .grid, .grid3{grid-template-columns:1fr} }
+
+    label{display:block; font-size:13px; color:var(--muted); margin:0 0 6px}
+    input[type="number"], select{
+      width:100%;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      outline:none;
+    }
+    input[type="number"]:focus, select:focus{border-color: rgba(122,162,255,.55)}
+
+    .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
+    .toggle{display:flex;gap:10px;flex-wrap:wrap}
+    .pill{
+      display:flex;align-items:center;gap:8px;
+      padding:10px 12px;border:1px solid var(--border);
+      border-radius:999px;background: rgba(0,0,0,.16);
+      cursor:pointer;user-select:none;
+    }
+    .pill input{accent-color: var(--accent)}
+    .pill span{font-size:13px}
+
+    .outputs{display:grid;grid-template-columns: 1fr;gap:10px;margin-top:10px}
+    .stat{
+      padding:12px;border:1px solid var(--border);
+      border-radius:14px;background: rgba(0,0,0,.16);
+    }
+    .stat .k{font-size:12px;color:var(--muted);margin-bottom:4px}
+    .stat .v{font-size:18px;font-weight:700}
+    .stat .s{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.35}
+
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .chip{
+      background: rgba(0,0,0,.18);
+      border:1px solid var(--border);
+      border-radius:999px;
+      padding:7px 10px;
+      font-size:12px;
+      color: var(--muted);
+    }
+
+    .flag{
+      border-radius:14px;padding:10px 12px;
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.16);
+      line-height:1.35;font-size:13px;
+      margin-bottom:10px;
+    }
+    .flag b{color:var(--text)}
+    .flag.good{border-color: rgba(46,204,113,.45)}
+    .flag.warn{border-color: rgba(241,196,15,.45)}
+    .flag.bad{border-color: rgba(255,91,91,.45)}
+
+    .confidence{
+      padding:14px;border-radius:16px;
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.16);
+    }
+    .confidence .big{font-size:18px;font-weight:800;margin:0 0 6px}
+    .confidence .small{font-size:13px;color:var(--muted);margin:0;line-height:1.4}
+
+    .checklist{display:grid;grid-template-columns: 1fr 1fr;gap:8px;margin-top:10px}
+    @media (max-width: 540px){ .checklist{grid-template-columns:1fr} }
+    .check{
+      display:flex;align-items:flex-start;gap:10px;
+      padding:10px 12px;border-radius:14px;
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.14);
+      font-size:13px;color: var(--text);
+    }
+    .check input{margin-top:2px; accent-color: var(--accent)}
+
+    button{
+      border:1px solid var(--border);
+      background: rgba(122,162,255,.18);
+      color: var(--text);
+      padding:10px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight:600;
+    }
+    button:hover{background: rgba(122,162,255,.25)}
+    .btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .hr{height:1px;background:var(--border);margin:12px 0}
+
+    /* Tooltip UI */
+    .helpbtn{
+      margin-left:auto;
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      width:26px;height:26px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      font-weight:800;
+      line-height:1;
+    }
+    .helpbtn:hover{border-color: rgba(122,162,255,.55)}
+    .tip{
+      display:none;
+      margin-top:8px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(122,162,255,.35);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      font-size:13px;
+      line-height:1.35;
+    }
+    .tip ul{margin:8px 0 0 18px;padding:0}
+    .tip li{margin:4px 0}
+    .checkwrap{flex:1; display:flex; align-items:flex-start; gap:10px}
+    .checktext{flex:1}
+
+    .footer-note{max-width:1100px;margin:0 auto 24px;padding:0 16px;color:var(--muted);font-size:12px;line-height:1.5}
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Paint a Room – Confidence Planner</h1>
+    <p class="subtitle">
+      A calm <b>second opinion</b> before you buy: realistic paint range, coats/primer guidance, time sanity-check, and gentle warnings if something looks off.
+    </p>
+  </header>
+
+  <main>
+    <!-- Inputs -->
+    <section class="card">
+      <h2>Step 1: Measure your room</h2>
+      <p class="hint">Measure at floor level. If a wall varies slightly, use the longest measurement. Don’t worry about millimetres — this tool builds in margin.</p>
+
+      <div class="grid3">
+        <div>
+          <label for="len">Room length (m)</label>
+          <input id="len" type="number" min="0" step="0.01" value="4" />
+        </div>
+        <div>
+          <label for="wid">Room width (m)</label>
+          <input id="wid" type="number" min="0" step="0.01" value="3" />
+        </div>
+        <div>
+          <label for="hei">Room height (m)</label>
+          <input id="hei" type="number" min="0" step="0.01" value="2.4" />
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <h2>Step 2: What are you painting?</h2>
+      <div class="toggle">
+        <label class="pill"><input id="paintWalls" type="checkbox" checked /> <span>Walls</span></label>
+        <label class="pill"><input id="paintCeil" type="checkbox" /> <span>Ceiling</span></label>
+      </div>
+      <p class="hint" id="ceilHint" style="display:none;">Ceilings often take more effort than expected — we account for that.</p>
+
+      <div class="hr"></div>
+
+      <h2>Step 3: Tell us about the reality</h2>
+
+      <div class="grid">
+        <div>
+          <label for="texture">Surface texture</label>
+          <select id="texture">
+            <option value="smooth">Smooth (plaster/drywall)</option>
+            <option value="light">Light texture</option>
+            <option value="heavy">Heavy texture</option>
+          </select>
+          <p class="hint">Texture increases paint usage more than most people expect.</p>
+        </div>
+
+        <div>
+          <label for="transition">Colour change</label>
+          <select id="transition">
+            <option value="same">Same colour / refresh</option>
+            <option value="light_light">Light → Light</option>
+            <option value="light_dark">Light → Dark</option>
+            <option value="dark_light">Dark → Light</option>
+          </select>
+          <p class="hint" id="darkLightHint" style="display:none;">Dark → light is the most common cause of patchy results when primer is skipped.</p>
+        </div>
+
+        <div>
+          <label for="method">Application method</label>
+          <select id="method">
+            <option value="roller">Roller + brush</option>
+            <option value="brush">Brush only</option>
+            <option value="sprayer">Sprayer</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="skill">Experience</label>
+          <select id="skill">
+            <option value="first">First time</option>
+            <option value="some">Some experience</option>
+            <option value="confident">Confident DIYer</option>
+          </select>
+          <p class="hint">No judgement — this just affects margin and risk flags.</p>
+        </div>
+      </div>
+
+      <!-- Doors & windows (visible + non-wrapping label) -->
+      <div style="margin-top:12px;">
+        <h3 style="margin:6px 0 6px;font-size:14px;color:var(--text);">Doors & windows (optional)</h3>
+        <div class="grid">
+          <div>
+            <label for="doors">Number of doors</label>
+            <input id="doors" type="number" min="0" step="1" value="0" />
+            <p class="hint">Typical sizes assumed. No need to measure.</p>
+          </div>
+          <div>
+            <label for="windows" style="white-space:nowrap;">Number of windows</label>
+            <input id="windows" type="number" min="0" step="1" value="0" />
+            <p class="hint">Subtraction is capped so the estimate stays safe.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <h2>Step 4: Time you’re allowing</h2>
+      <div class="row">
+        <div style="flex:1; min-width:220px;">
+          <label for="timebox">Time expectation</label>
+          <select id="timebox">
+            <option value="half">Half a day</option>
+            <option value="day" selected>One day</option>
+            <option value="weekend">Weekend</option>
+          </select>
+        </div>
+      </div>
+      <p class="hint">This is just a sanity-check to prevent rushed, patchy finishes.</p>
+
+      <div class="btnrow">
+        <button id="resetBtn" type="button">Reset example values</button>
+      </div>
+    </section>
+
+    <!-- Outputs -->
+    <section class="card">
+      <h2>Step 5: Your plan, in plain numbers</h2>
+
+      <div class="outputs">
+        <div class="stat">
+          <div class="k">Paint quantity (range)</div>
+          <div class="v" id="paintRange">—</div>
+          <div class="s" id="paintExplain">Enter measurements to see a realistic minimum vs safer amount.</div>
+        </div>
+
+        <div class="stat">
+          <div class="k">Coats & primer</div>
+          <div class="v" id="coatsPrimer">—</div>
+          <div class="s" id="coatsExplain">We’ll recommend primer when it typically prevents patchiness or reduces total paint use.</div>
+        </div>
+
+        <div class="stat">
+          <div class="k">Time reality check</div>
+          <div class="v" id="timeReality">—</div>
+          <div class="s" id="timeExplain">This helps you avoid rushing (which causes lap marks, patchiness, and missed edges).</div>
+        </div>
+      </div>
+
+      <div class="chips" id="chips"></div>
+
+      <div class="hr"></div>
+
+      <h2>Step 6: Second opinion (“does this look right?”)</h2>
+      <div id="flags"></div>
+
+      <div class="hr"></div>
+
+      <h2>Step 7: Before you buy</h2>
+
+      <div class="checklist">
+        <div>
+          <div class="check">
+            <div class="checkwrap">
+              <input type="checkbox" />
+              <div class="checktext">Enough paint (safe amount)</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="check" id="primerCheck">
+            <div class="checkwrap">
+              <input type="checkbox" />
+              <div class="checktext">Primer (if recommended)</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="check">
+            <div class="checkwrap">
+              <input type="checkbox" />
+              <div class="checktext">Correct roller / sleeve</div>
+              <button class="helpbtn" type="button" data-tip="tip-roller" aria-label="Roller sleeve help">?</button>
+            </div>
+          </div>
+          <div class="tip" id="tip-roller">
+            <b>Roller sleeve quick pick</b>
+            <ul>
+              <li><b>Smooth walls:</b> medium pile (about 3/8&quot;–1/2&quot;)</li>
+              <li><b>Light texture:</b> 1/2&quot;–3/4&quot;</li>
+              <li><b>Heavy texture:</b> 3/4&quot;–1&quot;</li>
+              <li><b>Ceilings:</b> usually medium pile; thicker if textured</li>
+            </ul>
+            <div style="margin-top:8px;color:var(--muted)">Rule of thumb: smoother wall → thinner pile; more texture → thicker pile.</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="check">
+            <div class="checkwrap">
+              <input type="checkbox" />
+              <div class="checktext">Cutting-in brush</div>
+              <button class="helpbtn" type="button" data-tip="tip-cutin" aria-label="Cutting-in brush help">?</button>
+            </div>
+          </div>
+          <div class="tip" id="tip-cutin">
+            <b>What is a cutting-in brush?</b><br>
+            It’s a smaller brush used to paint neat edges: corners, along ceilings, around sockets, and next to trim (where a roller can’t reach).
+            <ul>
+              <li><b>Easiest choice:</b> 2&quot; angled brush</li>
+              <li><b>Tight edges:</b> 1&quot;–1.5&quot; angled</li>
+            </ul>
+            <div style="margin-top:8px;color:var(--muted)">Quick tip: tap off excess (don’t wipe), then “draw” the edge slowly.</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="check">
+            <div class="checkwrap">
+              <input type="checkbox" />
+              <div class="checktext">Dust sheets / masking tape</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="check">
+            <div class="checkwrap">
+              <input type="checkbox" />
+              <div class="checktext">Time buffer for drying</div>
+              <button class="helpbtn" type="button" data-tip="tip-dry" aria-label="Drying time buffer help">?</button>
+            </div>
+          </div>
+          <div class="tip" id="tip-dry">
+            <b>Why “time buffer” matters</b>
+            <ul>
+              <li>Touch-dry ≠ ready for the next coat.</li>
+              <li>Cold/damp rooms take longer to dry.</li>
+              <li>Rushing the second coat causes patchiness and lap lines.</li>
+            </ul>
+            <div style="margin-top:8px;color:var(--muted)">Plan: coat → dry → recoat, plus slack for ventilation and tidy-up.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="confidence" id="confidenceBox">
+        <p class="big" id="confidenceTitle">—</p>
+        <p class="small" id="confidenceText">Your confidence status will appear here once inputs are complete.</p>
+      </div>
+
+      <!-- Summary (new) -->
+      <div class="hr"></div>
+      <div class="stat" id="summaryBox">
+        <div class="k">In short</div>
+        <div class="s" id="summaryText">Enter your details above to see a plain-English recommendation.</div>
+      </div>
+    </section>
+  </main>
+
+  <div class="footer-note">
+    <b>Note:</b> Door/window subtraction uses typical sizes and is capped so the estimate stays safe. This MVP uses conservative assumptions to reduce “run-out” risk.
+  </div>
+
+<script>
+(function(){
+  // -------- v1 constants --------
+  const COVERAGE_M2_PER_L_PER_COAT = 10; // conservative base
+
+  const textureMod = { smooth: 1.00, light: 1.15, heavy: 1.30 };
+  const methodMod  = { roller: 1.00, brush: 1.10, sprayer: 1.20 };
+  const skillMod   = { confident: 1.05, some: 1.10, first: 1.20 };
+
+  // Doors/windows typical sizes + safety cap
+  const DOOR_AREA = 1.8;        // m²
+  const WINDOW_AREA = 1.2;      // m²
+  const MAX_OPENING_RATIO = 0.30; // never subtract >30% of wall area
+
+  const timeboxHours = { half: 4, day: 8, weekend: 16 };
+
+  // -------- helpers --------
+  const el = (id)=>document.getElementById(id);
+
+  function clampPositive(n){ return (isFinite(n) && n>0) ? n : 0; }
+  function roundUpTo(n, step=0.5){ return Math.ceil(n / step) * step; }
+  function fmtLitres(n){
+    const r = Math.round(n*10)/10;
+    return (Math.abs(r - Math.round(r)) < 1e-9) ? `${Math.round(r)}L` : `${r.toFixed(1)}L`;
+  }
+  function fmtHoursRange(lo, hi){
+    const rlo = Math.round(lo);
+    const rhi = Math.round(hi);
+    return (rlo === rhi) ? `${rlo} hrs` : `${rlo}–${rhi} hrs`;
+  }
+
+  function coatsAndPrimer(trans){
+    switch(trans){
+      case "same":
+        return { coatsMin: 1, coatsMax: 2, primerLevel: "No", primerWhy: "Same colour refresh typically doesn’t need primer." };
+      case "light_light":
+        return { coatsMin: 2, coatsMax: 2, primerLevel: "Optional", primerWhy: "Primer can help if the existing paint is patchy or stained." };
+      case "light_dark":
+        return { coatsMin: 2, coatsMax: 2, primerLevel: "Optional", primerWhy: "Primer can improve uniformity, but usually isn’t essential." };
+      case "dark_light":
+        return { coatsMin: 2, coatsMax: 3, primerLevel: "Strongly recommended", primerWhy: "Dark → light often goes patchy without primer and can take extra coats." };
+      default:
+        return { coatsMin: 2, coatsMax: 2, primerLevel: "Optional", primerWhy: "Primer depends on surface condition." };
+    }
+  }
+
+  // Tooltip wiring
+  function wireTooltips(){
+    document.querySelectorAll(".helpbtn").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const id = btn.getAttribute("data-tip");
+        const tip = document.getElementById(id);
+        const isOpen = tip.style.display === "block";
+        document.querySelectorAll(".tip").forEach(t=>t.style.display="none");
+        tip.style.display = isOpen ? "none" : "block";
+      });
+    });
+    document.addEventListener("click", (e)=>{
+      const withinTip = e.target.closest(".tip");
+      const withinBtn = e.target.closest(".helpbtn");
+      if (!withinTip && !withinBtn){
+        document.querySelectorAll(".tip").forEach(t=>t.style.display="none");
+      }
+    });
+    document.addEventListener("keydown", (e)=>{
+      if (e.key === "Escape"){
+        document.querySelectorAll(".tip").forEach(t=>t.style.display="none");
+      }
+    });
+  }
+
+  // -------- DOM --------
+  const len = el("len"), wid = el("wid"), hei = el("hei");
+  const paintWalls = el("paintWalls"), paintCeil = el("paintCeil");
+  const texture = el("texture"), transition = el("transition"), method = el("method"), skill = el("skill");
+  const doors = el("doors"), windows = el("windows");
+  const timebox = el("timebox");
+
+  const ceilHint = el("ceilHint");
+  const darkLightHint = el("darkLightHint");
+
+  const paintRange = el("paintRange");
+  const paintExplain = el("paintExplain");
+  const coatsPrimer = el("coatsPrimer");
+  const coatsExplain = el("coatsExplain");
+  const timeReality = el("timeReality");
+  const timeExplain = el("timeExplain");
+  const chips = el("chips");
+  const flagsBox = el("flags");
+  const confidenceTitle = el("confidenceTitle");
+  const confidenceText = el("confidenceText");
+  const confidenceBox = el("confidenceBox");
+  const primerCheck = el("primerCheck");
+  const summaryText = el("summaryText");
+  const resetBtn = el("resetBtn");
+
+  function calc(){
+    const L = clampPositive(parseFloat(len.value));
+    const W = clampPositive(parseFloat(wid.value));
+    const H = clampPositive(parseFloat(hei.value));
+
+    const doWalls = !!paintWalls.checked;
+    const doCeil = !!paintCeil.checked;
+
+    ceilHint.style.display = doCeil ? "block" : "none";
+    darkLightHint.style.display = (transition.value === "dark_light") ? "block" : "none";
+
+    const complete = (L>0 && W>0 && H>0 && (doWalls || doCeil));
+
+    if (!complete){
+      paintRange.textContent = "—";
+      paintExplain.textContent = "Enter length, width, height, and select Walls and/or Ceiling.";
+      coatsPrimer.textContent = "—";
+      coatsExplain.textContent = "—";
+      timeReality.textContent = "—";
+      timeExplain.textContent = "—";
+      chips.innerHTML = "";
+      flagsBox.innerHTML = `<div class="flag good"><b>Tip:</b> Start with room dimensions and choose “Walls” and/or “Ceiling”.</div>`;
+      confidenceTitle.textContent = "—";
+      confidenceText.textContent = "Your confidence status will appear here once inputs are complete.";
+      confidenceBox.style.borderColor = "var(--border)";
+      primerCheck.style.opacity = 0.6;
+      summaryText.textContent = "Enter your details above to see a plain-English recommendation.";
+      return;
+    }
+
+    // ---- Areas ----
+    let wallArea = doWalls ? 2 * (L + W) * H : 0;
+
+    // Doors & windows subtraction (walls only), with safety cap
+    let d = Math.max(0, parseInt(doors.value || "0", 10));
+    let w = Math.max(0, parseInt(windows.value || "0", 10));
+    if (!Number.isFinite(d)) d = 0;
+    if (!Number.isFinite(w)) w = 0;
+
+    if (doWalls){
+      const openings = (d * DOOR_AREA) + (w * WINDOW_AREA);
+      const maxSubtract = wallArea * MAX_OPENING_RATIO;
+      wallArea = Math.max(0, wallArea - Math.min(openings, maxSubtract));
+    }
+
+    const ceilArea = doCeil ? (L * W) : 0;
+    const totalArea = wallArea + ceilArea;
+
+    // ---- Coats & primer ----
+    const cp = coatsAndPrimer(transition.value);
+    const coatsExpected = (cp.coatsMin === cp.coatsMax) ? cp.coatsMin : (cp.coatsMin + cp.coatsMax)/2;
+
+    // ---- Paint litres ----
+    const rawLitres = (totalArea * coatsExpected) / COVERAGE_M2_PER_L_PER_COAT;
+    const adjustedLitres = rawLitres * textureMod[texture.value] * methodMod[method.value] * skillMod[skill.value];
+
+    const minL = roundUpTo(rawLitres, 0.5);
+    const safeL = roundUpTo(adjustedLitres, 0.5);
+
+    // ---- Time estimate ----
+    const refWallArea = 2*(4+3)*2.4; // reference room
+    const refCeilArea = 4*3;
+    const refAreaWallsOnly = refWallArea;
+    const refAreaWallsCeil = refWallArea + refCeilArea;
+
+    const baseLo = (doWalls && doCeil) ? 6 : 4;
+    const baseHi = (doWalls && doCeil) ? 10 : 6;
+    const refArea = (doWalls && doCeil) ? refAreaWallsCeil : refAreaWallsOnly;
+
+    const areaScale = Math.max(0.6, Math.min(2.2, totalArea / refArea));
+    let tLo = baseLo * areaScale;
+    let tHi = baseHi * areaScale;
+
+    if (skill.value === "first") { tLo *= 1.30; tHi *= 1.30; }
+    if (transition.value === "dark_light") { tLo *= 1.20; tHi *= 1.20; }
+    if (doCeil) { tLo *= 1.25; tHi *= 1.25; }
+
+    const chosenHours = timeboxHours[timebox.value];
+    const expectedMid = (tLo + tHi)/2;
+
+    // ---- Outputs ----
+    paintRange.textContent = `${fmtLitres(minL)} (minimum)  →  ${fmtLitres(safeL)} (safer)`;
+    paintExplain.textContent =
+      "Minimum assumes ideal coverage. Safer amount includes real-world factors (texture, method, margin for cutting-in/touch-ups). Doors/windows use typical sizes (capped for safety).";
+
+    coatsPrimer.textContent = `${cp.coatsMin}${cp.coatsMax!==cp.coatsMin ? "–"+cp.coatsMax : ""} coats · Primer: ${cp.primerLevel}`;
+    coatsExplain.textContent = cp.primerWhy;
+
+    timeReality.textContent = fmtHoursRange(tLo, tHi);
+    timeExplain.textContent = `You selected: ${timebox.value==="half"?"Half a day":timebox.value==="day"?"One day":"Weekend"} (${chosenHours} hrs).`;
+
+    // ---- Chips ----
+    chips.innerHTML = "";
+    const scopeText = (doWalls && doCeil) ? "Scope: walls + ceiling" : (doWalls ? "Scope: walls" : "Scope: ceiling");
+    const chipList = [
+      `Area: ${Math.round(totalArea*10)/10} m²`,
+      scopeText,
+      `Texture: ${texture.options[texture.selectedIndex].text}`,
+      `Colour: ${transition.options[transition.selectedIndex].text}`,
+      `Method: ${method.options[method.selectedIndex].text}`,
+      `Experience: ${skill.options[skill.selectedIndex].text}`,
+      `Openings: ${d} door(s), ${w} window(s)`
+    ];
+    chipList.forEach(t=>{
+      const c = document.createElement("div");
+      c.className = "chip";
+      c.textContent = t;
+      chips.appendChild(c);
+    });
+
+    // ---- Reasonableness flags ----
+    const flags = [];
+
+    const litresPerM2 = safeL / Math.max(1e-9, totalArea);
+    if (litresPerM2 > 0.25){
+      flags.push({
+        level:"warn",
+        title:"Higher than typical paint usage",
+        msg:"Your plan comes out higher than average. Common reasons: textured walls, sprayer use, dark→light colour change, or first-time margin. Consider double-checking measurements (and whether ceiling is included)."
+      });
+    }
+
+    if (transition.value === "dark_light"){
+      flags.push({
+        level:"warn",
+        title:"Dark → light risk",
+        msg:"Dark→light often goes patchy without primer and can take extra coats. Primer usually reduces frustration (and can reduce total paint needed)."
+      });
+    }
+
+    if (expectedMid > chosenHours * 1.25){
+      flags.push({
+        level:"warn",
+        title:"Time expectation may be tight",
+        msg:"Rooms like this often take longer than your selected time window. Rushing increases lap marks, missed edges, and uneven finish."
+      });
+    }
+
+    if (skill.value === "first" && (safeL - minL) <= 0.5){
+      flags.push({
+        level:"warn",
+        title:"First-time margin",
+        msg:"First-time painters usually benefit from a little extra margin (especially for cutting-in and touch-ups)."
+      });
+    }
+
+    flagsBox.innerHTML = "";
+    if (flags.length === 0){
+      flagsBox.innerHTML = `<div class="flag good"><b>Looks reasonable.</b> Nothing stands out as unusual for your inputs.</div>`;
+    } else {
+      flags.forEach(f=>{
+        const div = document.createElement("div");
+        div.className = `flag ${f.level}`;
+        div.innerHTML = `<b>${f.title}:</b> ${f.msg}`;
+        flagsBox.appendChild(div);
+      });
+    }
+
+    // ---- Confidence status ----
+    const hasTimeMismatch = flags.some(f=>f.title.includes("Time expectation"));
+    const highRiskCombo = (transition.value==="dark_light" && skill.value==="first" && hasTimeMismatch);
+
+    let status = "green";
+    if (highRiskCombo) status = "red";
+    else if (flags.length >= 3) status = "red";
+    else if (flags.length >= 1) status = "yellow";
+
+    if (status === "green"){
+      confidenceTitle.textContent = "🟢 Ready to proceed";
+      confidenceText.textContent = "Your plan looks sensible. If you buy the safer quantity, you’re unlikely to hit surprise run-outs.";
+      confidenceBox.style.borderColor = "rgba(46,204,113,.55)";
+    } else if (status === "yellow"){
+      confidenceTitle.textContent = "🟡 Proceed with care";
+      confidenceText.textContent = "Nothing fatal — but one or two items deserve a quick double-check. The warnings above show the most common regret points.";
+      confidenceBox.style.borderColor = "rgba(241,196,15,.55)";
+    } else {
+      confidenceTitle.textContent = "🔴 High risk without changes";
+      confidenceText.textContent = "Your inputs suggest a higher chance of patchiness, running out, or rushing. Consider adding primer (if dark→light), allowing more time, or buying the safer quantity.";
+      confidenceBox.style.borderColor = "rgba(255,91,91,.55)";
+    }
+
+    // Primer checklist opacity
+    primerCheck.style.opacity = (cp.primerLevel === "No") ? 0.5 : 1.0;
+
+    // ---- Summary (plain English) ----
+    const summary = [];
+    summary.push(`Buy <b>${fmtLitres(safeL)}</b> rather than ${fmtLitres(minL)} to reduce the chance of running out.`);
+
+    if (expectedMid > chosenHours){
+      summary.push(`Allow closer to <b>${fmtHoursRange(tLo, tHi)}</b> — rushing is the most common cause of patchy results.`);
+    } else {
+      summary.push(`Your time allowance looks realistic for this room.`);
+    }
+
+    if (cp.primerLevel === "Strongly recommended"){
+      summary.push(`<b>Primer is strongly recommended</b> for this colour change to avoid patchiness.`);
+    } else if (cp.primerLevel === "Optional"){
+      summary.push(`Primer is optional — it can improve consistency but isn’t essential.`);
+    } else {
+      summary.push(`Primer is not usually needed for this job.`);
+    }
+
+    summaryText.innerHTML = "• " + summary.join("<br>• ");
+  }
+
+  // Events
+  const watched = [
+    el("len"), el("wid"), el("hei"),
+    el("paintWalls"), el("paintCeil"),
+    el("texture"), el("transition"), el("method"), el("skill"),
+    el("doors"), el("windows"),
+    el("timebox")
+  ];
+  watched.forEach(x=>{
+    x.addEventListener("input", calc);
+    x.addEventListener("change", calc);
+  });
+
+  el("resetBtn").addEventListener("click", ()=>{
+    el("len").value = 4; el("wid").value = 3; el("hei").value = 2.4;
+    el("paintWalls").checked = true; el("paintCeil").checked = false;
+    el("texture").value = "smooth";
+    el("transition").value = "same";
+    el("method").value = "roller";
+    el("skill").value = "first";
+    el("doors").value = 0;
+    el("windows").value = 0;
+    el("timebox").value = "day";
+    calc();
+  });
+
+  // Tooltips
+  (function wireTooltips(){
+    document.querySelectorAll(".helpbtn").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const id = btn.getAttribute("data-tip");
+        const tip = document.getElementById(id);
+        const isOpen = tip.style.display === "block";
+        document.querySelectorAll(".tip").forEach(t=>t.style.display="none");
+        tip.style.display = isOpen ? "none" : "block";
+      });
+    });
+    document.addEventListener("click", (e)=>{
+      const withinTip = e.target.closest(".tip");
+      const withinBtn = e.target.closest(".helpbtn");
+      if (!withinTip && !withinBtn){
+        document.querySelectorAll(".tip").forEach(t=>t.style.display="none");
+      }
+    });
+    document.addEventListener("keydown", (e)=>{
+      if (e.key === "Escape"){
+        document.querySelectorAll(".tip").forEach(t=>t.style.display="none");
+      }
+    });
+  })();
+
+  calc();
+})();
+</script>
+</body>
+</html>
