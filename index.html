@@ -1,67 +1,213 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>“Free Tools, Practical Guides & Useful Recommendations”</title>
-  <meta name="description" content="Simple tools, clear guides, and honest recommendations." />
-  <style>
-    .header-image {
-  width: 100%;
-  max-height: 420px;
-  object-fit: cover;
-  border-radius: 16px;
-  margin: 18px 0;
-}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Free Tools & Practical Guides</title>
 
-    body{font-family:system-ui,Segoe UI,Arial;margin:0;background:#f6f7fb;color:#111}
-   .wrap{max-width:1200px;margin:0 auto;padding:32px}
-    header{padding:28px 0}
-    h1{margin:0 0 10px;font-size:34px}
-    p{line-height:1.5}
-    .card{background:#fff;border:1px solid #e6e6ef;border-radius:16px;padding:18px;margin:14px 0}
-    .muted{color:#555;font-size:14px}
-    footer{margin:30px 0 10px}
+  <style>
+    :root {
+      --bg: #f8f9fa;
+      --text: #222;
+      --muted: #555;
+      --accent: #2c7be5;
+      --card: #ffffff;
+      --border: #e0e0e0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    h1, h2, h3 {
+      line-height: 1.25;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    h2 {
+      margin-top: 3rem;
+      font-size: 1.6rem;
+    }
+
+    p {
+      color: var(--muted);
+    }
+
+    /* Hero */
+    .hero {
+      padding: 3rem 0;
+    }
+
+    .hero p {
+      max-width: 600px;
+      font-size: 1.05rem;
+    }
+
+    .cta {
+      display: inline-block;
+      margin-top: 1.5rem;
+      padding: 0.75rem 1.5rem;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .cta:hover {
+      opacity: 0.9;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .card h3 {
+      margin-top: 0;
+    }
+
+    .card a {
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .card a:hover {
+      text-decoration: underline;
+    }
+
+    /* Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
   </style>
 </head>
+
 <body>
-  <div class="wrap">
+  <main class="container">
 
-    <header>
-      <h1>“Free Tools, Practical Guides & Useful Recommendations”</h1>
-      <img src="header.jpg" alt="Simple desk with notebook and pen in natural light" class="header-image">
-      <p>Practical tools, clear guides, and honest recommendations — without jargon or pressure.</p>
-      </header>
+    <!-- HERO -->
+    <section class="hero">
+      <h1>Free Tools & Practical Guides</h1>
+      <p>
+        Simple calculators and resources to help you plan DIY projects,
+        estimate costs, and avoid common mistakes.
+      </p>
+      <a class="cta" href="#calculator">Try the DIY Project Calculator</a>
+    </section>
 
-    <div class="card">
-      <h2>What you’ll find here</h2>
-      <ul>
-        <li>✔ Simple tools and calculators</li>
-        <li>✔ Straightforward guides anyone can follow</li>
-        <li>✔ Carefully chosen recommendations (only when useful)</li>
-      </ul>
-    </div>
-<div class="card">
-  <h2>🧰 DIY Project Calculator</h2>
-  <p>
-    A simple calculator to help estimate materials and plan common DIY jobs.
-  </p>
-  <a class="btn" href="/diy-calculator/">Open calculator</a>
-</div>
-    <div class="card">
-      <h2>Recommended resource</h2>
-      <p class="muted">(Recommendations will appear here when available.)</p>
-    </div>
+    <!-- FEATURED TOOL -->
+    <section id="calculator">
+      <h2>Featured Tool</h2>
 
- <footer class="muted">
-  <p>
-    Some links on this site may be affiliate links.
-  </p>
-  <p>
-    <a href="privacy.html">Privacy</a> •
-    <a href="disclosure.html">Affiliate Disclosure</a>
-  </p>
-</footer>
-  </div>
+      <div class="card">
+        <h3>DIY Project Calculator</h3>
+        <p>
+          Plan materials and estimate costs in seconds.
+          No signup. Works directly in your browser.
+        </p>
+        <ul>
+          <li>Avoid under-buying materials</li>
+          <li>Quick cost visibility</li>
+          <li>Free and simple to use</li>
+        </ul>
+        <a href="YOUR-CALCULATOR-LINK-HERE">Open Calculator →</a>
+      </div>
+    </section>
+
+    <!-- TOOLS -->
+    <section>
+      <h2>Tools & Resources</h2>
+
+      <div class="grid">
+        <div class="card">
+          <h3>More Tools</h3>
+          <p>
+            Additional calculators and practical tools
+            are being added over time.
+          </p>
+          <p><em>Coming soon</em></p>
+        </div>
+
+        <div class="card">
+          <h3>Practical Guides</h3>
+          <p>
+            Short, no-nonsense guides focused on
+            real-world DIY and planning tasks.
+          </p>
+          <p><em>In progress</em></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- RECOMMENDATIONS -->
+    <section>
+      <h2>Useful Recommendations</h2>
+
+      <div class="card">
+        <p>
+          Hand-picked tools and resources I’ve found useful
+          for DIY and home projects.
+        </p>
+        <p>
+          (No spam. Only things worth bookmarking.)
+        </p>
+      </div>
+    </section>
+
+    <!-- PURPOSE -->
+    <section>
+      <h2>Why This Site Exists</h2>
+
+      <div class="card">
+        <p>
+          This site is about removing friction from everyday tasks.
+          No accounts. No clutter. Just useful tools that work.
+        </p>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <p>
+        © 2025 • Built with simple web tools • Hosted on GitHub Pages
+      </p>
+    </footer>
+
+  </main>
 </body>
 </html>
