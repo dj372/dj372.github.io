@@ -27,49 +27,43 @@
       line-height: 1.6;
     }
 
+    /* ---------- LAYOUT ---------- */
+
     .container {
-      max-width: 1000px;
+      max-width: 1100px;
       margin: 0 auto;
       padding: 2rem 1.5rem;
     }
 
-    h1, h2, h3 {
-      line-height: 1.25;
-    }
+    /* ---------- HERO (FULL WIDTH) ---------- */
 
-    h1 {
-      font-size: 2.2rem;
-      margin-bottom: 0.5rem;
-    }
-
-    h2 {
-      margin-top: 3rem;
-      font-size: 1.6rem;
-    }
-
-    p {
-      color: var(--muted);
-    }
-
-    /* Hero */
     .hero {
-      padding: 3rem 0;
+      width: 100%;
+      padding: 3.5rem 1.5rem;
+      background: var(--bg);
     }
 
-   .hero p {
-  max-width: 100%;
-  white-space: nowrap;
-  font-size: 1.05rem;
-}
-@media (max-width: 768px) {
-  .hero p {
-    white-space: normal;
-  }
-}
+    .hero-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      font-size: 2.4rem;
+      margin: 0 0 0.75rem 0;
+      line-height: 1.2;
+    }
+
+    .hero-subtitle {
+      font-size: 1.05rem;
+      color: var(--muted);
+      white-space: nowrap; /* DESKTOP: single line */
+    }
+
     .cta {
       display: inline-block;
-      margin-top: 1.5rem;
-      padding: 0.75rem 1.5rem;
+      margin-top: 1.75rem;
+      padding: 0.75rem 1.6rem;
       background: var(--accent);
       color: #fff;
       text-decoration: none;
@@ -81,7 +75,13 @@
       opacity: 0.9;
     }
 
-    /* Cards */
+    /* ---------- CARDS ---------- */
+
+    h2 {
+      margin-top: 3rem;
+      font-size: 1.6rem;
+    }
+
     .card {
       background: var(--card);
       border: 1px solid var(--border);
@@ -104,14 +104,16 @@
       text-decoration: underline;
     }
 
-    /* Grid */
+    /* ---------- GRID ---------- */
+
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 1.5rem;
     }
 
-    /* Footer */
+    /* ---------- FOOTER ---------- */
+
     footer {
       margin-top: 4rem;
       padding-top: 2rem;
@@ -119,21 +121,36 @@
       font-size: 0.9rem;
       color: var(--muted);
     }
+
+    /* ---------- MOBILE ---------- */
+
+    @media (max-width: 900px) {
+      .hero-subtitle {
+        white-space: normal; /* MOBILE: wrap */
+      }
+
+      .hero h1 {
+        font-size: 2rem;
+      }
+    }
   </style>
 </head>
 
 <body>
-  <main class="container">
 
-    <!-- HERO -->
-    <section class="hero">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
       <h1>Free Tools & Practical Guides</h1>
-      <p>
-        Simple calculators and resources to help you plan DIY projects,
-        estimate costs, and avoid common mistakes.
+      <p class="hero-subtitle">
+        Simple calculators and resources to help you plan DIY projects, estimate costs, and avoid common mistakes.
       </p>
       <a class="cta" href="#calculator">Try the DIY Project Calculator</a>
-    </section>
+    </div>
+  </section>
+
+  <!-- MAIN CONTENT -->
+  <main class="container">
 
     <!-- FEATURED TOOL -->
     <section id="calculator">
@@ -208,11 +225,10 @@
 
     <!-- FOOTER -->
     <footer>
-      <p>
-        © 2025 • Built with simple web tools • Hosted on GitHub Pages
-      </p>
+      © 2025 • Built with simple web tools • Hosted on GitHub Pages
     </footer>
 
   </main>
+
 </body>
 </html>
